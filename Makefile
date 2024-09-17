@@ -8,6 +8,14 @@ install-bin:
 install-npm:
 	npm install && npm fund
 
+# install-musl: Requires the musl source to be unpacked into musl/musl-src
+ifeq ($(origin MUSL_INSTALL_DIR), undefined)
+MUSL_INSTALL_DIR=`pwd`/release/musl
+endif
+MUSL_SRC_DIR=`pwd`/build/musl/musl
+install-musl:
+	(cd $(MUSL_SRC_DIR) && ./configure --prefix=$(MUSL_INSTALL_DIR) && make -j && make install)
+
 format:
 	cargo fmt --all --check
 

@@ -1,0 +1,31 @@
+name: Build musl-libc
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+env:
+  MUSL: musl
+  MUSL_PACKAGE: musl-1.2.5
+  MUSL_INSTALL: ${{ github.workspace }}/release/musl
+
+jobs:
+  build-musl-libc-x86:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: build-musl
+        run: |
+            mkdir -p build/musl
+            curl -sSL --output build/musl/${{ env.MUSL_PACKAGE }}.tar.gz https://musl.libc.org/releases/${{ env.MUSL_PACKAGE }}.tar.gz
+            (cd build/musl && tar zxf ${{ env.MUSL_PACKAGE }}.tar.gz && mv ${{ env.MUSL_PACKAGE }} ${{ env.MUSL}})
+            make install-musl MUSL_INSTALL_DIR=${{ env.MUSL_INSTALL }}
+ 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}
+          path: ${{ env.MUSL_INSTALL }}
+          retention-days: 1
+
+
