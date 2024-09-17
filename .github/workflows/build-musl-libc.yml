@@ -9,8 +9,11 @@ env:
   MUSL_PACKAGE: musl-1.2.5
   MUSL_INSTALL: ${{ github.workspace }}/release/musl
 
+  REVIVE_MUSL_INSTALL: ${{ github.workspace }}/release/revive-musl
+
 jobs:
   build-musl-libc-x86:
+    name: musl-libc-x86
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,11 +24,24 @@ jobs:
             curl -sSL --output build/musl/${{ env.MUSL_PACKAGE }}.tar.gz https://musl.libc.org/releases/${{ env.MUSL_PACKAGE }}.tar.gz
             (cd build/musl && tar zxf ${{ env.MUSL_PACKAGE }}.tar.gz && mv ${{ env.MUSL_PACKAGE }} ${{ env.MUSL}})
             make install-musl MUSL_INSTALL_DIR=${{ env.MUSL_INSTALL }}
- 
+
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ github.job }}
           path: ${{ env.MUSL_INSTALL }}
           retention-days: 1
 
+  build-revive-musl-x86:
+    name: revive-musl-x86
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
+      - name: build-musl
+        run: make install-revive-musl REVIVE_MUSL_INSTALL_DIR=${{ env.REVIVE_MUSL_INSTALL }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}
+          path: ${{ env.REVIVE_MUSL_INSTALL }}
+          retention-days: 1
