@@ -1,0 +1,39 @@
+name: Build revive-debian
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+env:
+  REVIVE_DEBIAN_PACKAGE: revive-debian-x86
+  DEBIAN_CONTAINER: revive-builder-debian-x86
+  DEBIAN_CONTAINER_BUILDER: build-debian-builder.sh
+  DEBIAN_CONTAINER_RUNNER: run-debian-builder.sh
+  REVIVE_DEBIAN_INSTALL: ${{ github.workspace }}/target/release
+
+jobs:
+  build-debian-container-x86:
+    name: debian-container-x86
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: build-container
+        run: |
+           (cd utils && ${{ env.DEBIAN_CONTAINER_RUNNER}} )
+
+  build-revive-debian-x86:
+    name: revive-debian-x86
+    runs-on: ubuntu-latest
+    needs: build-debian-container-x86
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: build-revive-debian
+        run: utils/${{{ env.DEBIAN_CONTAINER_RUNNER }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.REVIVE_DEBIAN_PACKAGE }}
+          path: ${{ env.REVIVE_DEBIAN_INSTALL }}
+          retention-days: 1

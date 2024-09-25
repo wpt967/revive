@@ -22,7 +22,6 @@ REVIVE_MUSL_INSTALL_DIR=`pwd`/release/revive-musl
 endif
 REVIVE_MUSL_SRC_DIR=`pwd`/build/musl/revive-musl
 install-revive-musl:
-#	(RUSTFLAGS='--target=x86_64-unknown-linux-musl -C target-feature=+crt-static' cargo install --path crates/solidity --root $(REVIVE_MUSL_INSTALL_DIR))
 	(RUSTFLAGS='-C target-feature=+crt-static' cargo install --path crates/solidity --root $(REVIVE_MUSL_INSTALL_DIR))
 
 format:
